@@ -16,6 +16,8 @@ import TypingIndicator from '../components/TypingIndicator';
 import EmptyState from '../components/EmptyState';
 import { useAuth } from '../contexts/AuthContext';
 import { chatService } from '../services/api';
+import { sendYandexMetrikaGoal } from '../utils/YandexMetrika';
+import { paymentService } from '../services/api';
 
 function Chat() {
   const { remainingMinutes, updateRemainingTime } = useAuth();
@@ -98,6 +100,55 @@ function Chat() {
     };
   }, [updateRemainingTime, typing]);
 
+  // Проверка наличия незавершенных платежей из предыдущего сеанса
+  useEffect(() => {
+    const checkPendingPayments = async () => {
+      try {
+        // Проверяем, есть ли информация о незавершенном платеже
+        const pendingPayment = localStorage.getItem('pendingPayment');
+        if (pendingPayment) {
+          // Парсим информацию о платеже
+          const paymentInfo = JSON.parse(pendingPayment);
+          
+          // Проверяем, не устарел ли платеж (старше 1 дня)
+          const paymentTime = new Date(paymentInfo.timestamp);
+          const currentTime = new Date();
+          const timeDiff = currentTime.getTime() - paymentTime.getTime();
+          const daysDiff = timeDiff / (1000 * 3600 * 24);
+          
+          // Если платеж старше 1 дня, удаляем информацию о нем
+          if (daysDiff > 1) {
+            localStorage.removeItem('pendingPayment');
+            return;
+          }
+          
+          // Проверяем статус платежа через API
+          const response = await paymentService.checkPaymentStatus(paymentInfo.payment_id);
+          
+          // Если платеж успешно завершен, обновляем информацию и отправляем событие
+          if (response.data.status === 'completed') {
+            updateRemainingTime(response.data.remaining_minutes);
+            
+            // Отправляем событие в Яндекс Метрику
+            sendYandexMetrikaGoal('payment_completed_background', {
+              payment_id: paymentInfo.payment_id,
+              plan_id: paymentInfo.plan_id,
+              plan_name: paymentInfo.plan_name,
+              price: paymentInfo.price,
+            });
+            
+            // Удаляем информацию о платеже
+            localStorage.removeItem('pendingPayment');
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка при проверке платежа:', error);
+      }
+    };
+    
+    checkPendingPayments();
+  }, [updateRemainingTime]);
+
   // Функция для прокрутки к последнему сообщению
   const scrollToBottom = () => {
     if (messageListRef.current) {
@@ -111,9 +162,12 @@ function Chat() {
     
     if (!message.trim()) return;
     
+    // Отмечаем событие отправки сообщения в Яндекс Метрике
+    sendYandexMetrikaGoal('message_sent');
+    
     // Если времени не осталось, открываем модальное окно
     if (remainingMinutes <= 0) {
-      setPaymentModalOpen(true);
+      handleOpenPaymentModal();
       return;
     }
     
@@ -161,7 +215,7 @@ function Chat() {
       
       // Если ошибка связана с истекшим временем
       if (error.response && error.response.status === 402) {
-        setPaymentModalOpen(true);
+        handleOpenPaymentModal();
       } else {
         setError('Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте позже.');
       }
@@ -183,6 +237,12 @@ function Chat() {
   // Обработчик закрытия уведомления об ошибке
   const handleCloseError = () => {
     setError('');
+  };
+
+  const handleOpenPaymentModal = () => {
+    // Отмечаем событие открытия окна оплаты в Яндекс Метрике
+    sendYandexMetrikaGoal('payment_modal_opened');
+    setPaymentModalOpen(true);
   };
 
   return (

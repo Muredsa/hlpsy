@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { paymentService } from '../services/api';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { sendYandexMetrikaGoal } from '../utils/YandexMetrika';
 
 function PaymentModal({ open, onClose }) {
   const [plans, setPlans] = useState([]);
@@ -48,20 +49,37 @@ function PaymentModal({ open, onClose }) {
   // Обработчик выбора тарифа
   const handlePlanSelect = (plan) => {
     setSelectedPlan(plan);
+    // Отслеживаем выбор тарифа
+    sendYandexMetrikaGoal('plan_selected', { plan_id: plan.id, plan_name: plan.name, price: plan.price });
   };
 
   // Обработчик нажатия на кнопку "Оплатить"
   const handlePayment = async () => {
     if (!selectedPlan) return;
 
+    // Отслеживаем нажатие на кнопку оплаты
+    sendYandexMetrikaGoal('payment_started', { plan_id: selectedPlan.id, plan_name: selectedPlan.name, price: selectedPlan.price });
+
     setLoading(true);
     try {
       const response = await paymentService.createPayment(selectedPlan.id);
+      
+      // Сохраняем информацию о начатом платеже для дальнейшего отслеживания
+      localStorage.setItem('pendingPayment', JSON.stringify({
+        payment_id: response.data.payment_id,
+        plan_id: selectedPlan.id,
+        plan_name: selectedPlan.name,
+        price: selectedPlan.price,
+        timestamp: new Date().toISOString()
+      }));
+      
       // Редирект на страницу оплаты
       window.location.href = response.data.payment_url;
     } catch (error) {
       console.error('Ошибка при создании платежа:', error);
       setLoading(false);
+      // Отслеживаем ошибку платежа
+      sendYandexMetrikaGoal('payment_error', { error_message: error.message });
     }
   };
 

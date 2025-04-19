@@ -5,6 +5,8 @@ import { useAuth } from './contexts/AuthContext';
 import Header from './components/Header';
 import Chat from './pages/Chat';
 import Privacy from './pages/Privacy';
+import PaymentSuccess from './pages/PaymentSuccess';
+import YandexMetrika from './utils/YandexMetrika';
 
 function App() {
   const { token, register } = useAuth();
@@ -26,11 +28,13 @@ function App() {
 
   return (
     <div className="app">
+      <YandexMetrika />
       <Header />
       <Container maxWidth="lg" style={{ paddingTop: '20px', paddingBottom: '20px' }}>
         <Routes>
           <Route path="/" element={<Chat />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/success" element={<PaymentSuccess />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Container>
