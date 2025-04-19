@@ -11,14 +11,22 @@ import CssBaseline from '@mui/material/CssBaseline';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2e7d32',
+      main: '#00a0b0',
+      light: '#4dd0e1',
+      dark: '#007885',
     },
     secondary: {
-      main: '#5e35b1',
+      main: '#6a7fdb',
+      light: '#9fa8e5',
+      dark: '#4055b5',
     },
     background: {
-      default: '#f5f5f5',
+      default: '#f8f9fa',
+      paper: '#ffffff',
     },
+    grey: {
+      100: '#f0f4f5',
+    }
   },
   typography: {
     fontFamily: '"Roboto", "Arial", sans-serif',

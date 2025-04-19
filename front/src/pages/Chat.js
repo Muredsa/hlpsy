@@ -187,27 +187,33 @@ function Chat() {
     setError('');
   };
 
-  // Обработчик проверки платежей
-  const handleCheckPayments = async () => {
-    try {
-      const response = await paymentService.checkAllPayments();
-      if (response.data.updated > 0) {
-        // Обновляем время, если были обновлены платежи
-        const timeResponse = await chatService.getRemainingTime();
-        updateRemainingTime(timeResponse.data.remaining_minutes);
-        setError(`Проверено ${response.data.checked} платежей, обновлено ${response.data.updated}. Ваше время обновлено!`);
-      } else {
-        setError(`Проверено ${response.data.checked} платежей. Новых оплаченных платежей не найдено.`);
-      }
-    } catch (error) {
-      console.error('Ошибка при проверке платежей:', error);
-      setError('Произошла ошибка при проверке платежей. Пожалуйста, попробуйте позже.');
-    }
-  };
-
   return (
-    <Box sx={{ height: 'calc(100vh - 140px)', display: 'flex', flexDirection: 'column' }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ pt: 2, pb: 2 }}>
+    <Box 
+      sx={{ 
+        height: '100dvh', 
+        maxHeight: '100dvh',
+        width: '100%',
+        display: 'flex', 
+        flexDirection: 'column',
+        padding: { xs: '8px', sm: '16px', md: '24px' },
+        paddingBottom: { xs: '8px', sm: '16px' },
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+        backgroundColor: 'background.default'
+      }}
+    >
+      <Typography 
+        variant="h4" 
+        component="h1" 
+        sx={{ 
+          pt: { xs: 0, sm: 1 }, 
+          pb: { xs: 1, sm: 1 },
+          fontSize: { xs: '1.5rem', sm: '2rem' },
+          fontWeight: 600,
+          color: 'primary.dark',
+          flexShrink: 0
+        }}
+      >
         Чат с психологом
       </Typography>
       
@@ -218,8 +224,10 @@ function Chat() {
           display: 'flex', 
           flexDirection: 'column',
           overflow: 'hidden',
-          borderRadius: 2,
-          mb: 2
+          borderRadius: { xs: 2, sm: 3 },
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+          backgroundColor: 'background.paper',
+          minHeight: 0, // Важно для корректной работы flex в Firefox
         }}
       >
         {/* Область с сообщениями */}
@@ -228,15 +236,30 @@ function Chat() {
           sx={{ 
             flex: 1, 
             overflowY: 'auto', 
-            p: 2,
+            p: { xs: 1.5, sm: 2 },
             display: 'flex',
             flexDirection: 'column',
-            gap: 1
+            gap: 1.5,
+            minHeight: 0, // Важно для корректной работы flex в Firefox
+            '&::-webkit-scrollbar': {
+              width: '6px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'rgba(0,0,0,0.05)',
+              borderRadius: '10px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'rgba(0,0,0,0.2)',
+              borderRadius: '10px',
+              '&:hover': {
+                background: 'rgba(0,0,0,0.3)',
+              },
+            },
           }}
         >
           {loadingHistory ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-              <CircularProgress />
+              <CircularProgress size={40} thickness={4} />
             </Box>
           ) : messages.length === 0 ? (
             <EmptyState />
@@ -259,12 +282,15 @@ function Chat() {
           component="form" 
           onSubmit={handleSendMessage}
           sx={{ 
-            p: 2, 
+            p: { xs: 1, sm: 1.5 }, 
             borderTop: '1px solid',
             borderColor: 'divider',
             backgroundColor: 'background.paper',
             display: 'flex',
-            alignItems: 'center'
+            alignItems: 'center',
+            position: 'relative',
+            boxShadow: '0 -2px 10px rgba(0,0,0,0.03)',
+            flexShrink: 0
           }}
         >
           <TextField
@@ -277,28 +303,43 @@ function Chat() {
             disabled={loading || typing}
             multiline
             maxRows={4}
-            sx={{ mr: 1 }}
+            sx={{ 
+              mr: 1,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '20px',
+                backgroundColor: 'rgba(0,0,0,0.02)',
+                '&:hover': {
+                  backgroundColor: 'rgba(0,0,0,0.03)',
+                },
+                '&.Mui-focused': {
+                  backgroundColor: 'white',
+                },
+              },
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (message.trim()) {
+                  handleSendMessage(e);
+                }
+              }
+            }}
           />
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={handleCheckPayments}
-            sx={{ mr: 1, minWidth: 'auto', px: 2 }}
-            title="Проверить платежи"
-          >
-            Проверить оплату
-          </Button>
           <IconButton 
             color="primary" 
             type="submit" 
             disabled={loading || typing || !message.trim()}
             sx={{ 
-              width: 50, 
-              height: 50,
+              width: { xs: 40, sm: 50 }, 
+              height: { xs: 40, sm: 50 },
+              borderRadius: '50%',
               backgroundColor: 'primary.main',
               color: 'white',
+              transition: 'all 0.2s',
+              flexShrink: 0,
               '&:hover': {
                 backgroundColor: 'primary.dark',
+                transform: 'scale(1.05)',
               },
               '&.Mui-disabled': {
                 backgroundColor: 'action.disabledBackground',

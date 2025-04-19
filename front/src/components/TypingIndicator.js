@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 
 /**
  * Компонент для отображения индикатора набора текста
@@ -10,59 +10,73 @@ function TypingIndicator() {
     <Box
       sx={{
         display: 'flex',
-        alignItems: 'center',
-        p: 2,
-        maxWidth: '40%',
-        borderRadius: 2,
-        bgcolor: 'grey.100',
-        ml: 1,
-        mb: 2
+        justifyContent: 'flex-start',
+        mb: { xs: 1, sm: 1.5 },
+        maxWidth: '100%'
       }}
     >
-      <CircularProgress size={16} thickness={4} sx={{ mr: 1 }} />
-      <Box
+      <Paper
+        elevation={1}
         sx={{
+          p: { xs: 1.2, sm: 1.5 },
+          maxWidth: { xs: '60%', sm: '40%' },
+          borderRadius: '16px 16px 16px 4px',
+          bgcolor: 'grey.100',
+          boxShadow: '0 2px 5px rgba(0, 0, 0, 0.05)',
           display: 'flex',
-          alignItems: 'center',
-          gap: 0.5
+          alignItems: 'center'
         }}
       >
         <Box
           sx={{
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            bgcolor: 'grey.500',
-            animation: 'pulse 1s infinite',
-            animationDelay: '0s',
-            '@keyframes pulse': {
-              '0%': { opacity: 0.4 },
-              '50%': { opacity: 1 },
-              '100%': { opacity: 0.4 }
-            }
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.8
           }}
-        />
-        <Box
-          sx={{
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            bgcolor: 'grey.500',
-            animation: 'pulse 1s infinite',
-            animationDelay: '0.2s'
-          }}
-        />
-        <Box
-          sx={{
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            bgcolor: 'grey.500',
-            animation: 'pulse 1s infinite',
-            animationDelay: '0.4s'
-          }}
-        />
-      </Box>
+        >
+          <Box
+            sx={{
+              width: { xs: 6, sm: 8 },
+              height: { xs: 6, sm: 8 },
+              borderRadius: '50%',
+              bgcolor: 'primary.main',
+              opacity: 0.6,
+              animation: 'bounce 1.4s infinite ease-in-out both',
+              animationDelay: '0s',
+              '@keyframes bounce': {
+                '0%, 80%, 100%': { 
+                  transform: 'scale(0)',
+                },
+                '40%': { 
+                  transform: 'scale(1)',
+                }
+              }
+            }}
+          />
+          <Box
+            sx={{
+              width: { xs: 6, sm: 8 },
+              height: { xs: 6, sm: 8 },
+              borderRadius: '50%',
+              bgcolor: 'primary.main',
+              opacity: 0.6,
+              animation: 'bounce 1.4s infinite ease-in-out both',
+              animationDelay: '0.16s',
+            }}
+          />
+          <Box
+            sx={{
+              width: { xs: 6, sm: 8 },
+              height: { xs: 6, sm: 8 },
+              borderRadius: '50%',
+              bgcolor: 'primary.main',
+              opacity: 0.6,
+              animation: 'bounce 1.4s infinite ease-in-out both',
+              animationDelay: '0.32s',
+            }}
+          />
+        </Box>
+      </Paper>
     </Box>
   );
 }
