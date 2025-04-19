@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Box, 
   TextField, 
-  Button, 
   CircularProgress, 
   Paper, 
   Typography,
@@ -17,7 +16,6 @@ import TypingIndicator from '../components/TypingIndicator';
 import EmptyState from '../components/EmptyState';
 import { useAuth } from '../contexts/AuthContext';
 import { chatService } from '../services/api';
-import { paymentService } from '../services/api';
 
 function Chat() {
   const { remainingMinutes, updateRemainingTime } = useAuth();
@@ -195,7 +193,7 @@ function Chat() {
         width: '100%',
         display: 'flex', 
         flexDirection: 'column',
-        padding: { xs: '8px', sm: '16px', md: '24px' },
+        padding: { xs: '1px', sm: '2px', md: '24px' },
         paddingBottom: { xs: '8px', sm: '16px' },
         boxSizing: 'border-box',
         overflow: 'hidden',
@@ -211,10 +209,11 @@ function Chat() {
           fontSize: { xs: '1.5rem', sm: '2rem' },
           fontWeight: 600,
           color: 'primary.dark',
-          flexShrink: 0
+          flexShrink: 0,
+          textAlign: 'center'
         }}
       >
-        Чат с психологом
+        Чат с психологом 24/7
       </Typography>
       
       <Paper 

@@ -44,7 +44,7 @@ function MessageItem({ message, isFromUser }) {
         </Typography>
         <Typography 
           variant="caption" 
-          color={isFromUser ? "rgba(255,255,255,0.7)" : "text.secondary"} 
+          color={isFromUser ? "rgba(255,255,255,0.7)" : "text.secondary"}
           sx={{ 
             display: 'block', 
             mt: 0.5, 
